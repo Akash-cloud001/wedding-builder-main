@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
-import { Type, Image as ImageIcon, Square, Youtube, Columns, Grid, ChevronDown, ChevronRight } from "lucide-react";
+import { Type, Image as ImageIcon, Square, Youtube, Columns, Grid, ChevronDown, ChevronRight, Flower2 } from "lucide-react";
 import { Layers } from "@craftjs/layers";
 import { UserText } from "../user/Text";
 import { UserContainer } from "../user/Container";
@@ -30,10 +30,13 @@ import { UserModernHero } from "../user/sections/ModernHero";
 // import { UserPrivateEventPopup } from "../user/sections/PrivateEventPopup";
 import { MousePointerClick, TextCursorInput, ToggleRight, SlidersHorizontal, Tag, RectangleHorizontal, Sparkles, PieChart, Table as TableIcon, Smile, LayoutTemplate, PanelBottom, Lock } from "lucide-react";
 
-type CategoryId = "text" | "media" | "layout" | "elements";
+import { useAppContext } from "./AppContext";
+
+type CategoryId = "text" | "media" | "layout" | "elements" | "decoratives";
 
 export const Toolbox = () => {
     const { connectors } = useEditor();
+    const { setActiveRightPanel } = useAppContext();
     const [openCategory, setOpenCategory] = React.useState<CategoryId | null>(null);
 
     const renderCategoryButton = (id: CategoryId, label: string, Icon: React.ComponentType<any>) => (
@@ -62,14 +65,41 @@ export const Toolbox = () => {
             <Tabs defaultValue="components" className="flex-1 flex flex-col min-h-0">
                 <div className="px-4 pt-4">
                     <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="components">Add</TabsTrigger>
-                        <TabsTrigger value="layers">Layers</TabsTrigger>
+                        <TabsTrigger value="components" onClick={() => setActiveRightPanel("properties")}>Add</TabsTrigger>
+                        <TabsTrigger value="layers" onClick={() => setActiveRightPanel("properties")}>Layers</TabsTrigger>
                     </TabsList>
                 </div>
 
                 <TabsContent value="components" className="flex-1 p-0 overflow-hidden flex flex-col min-h-0">
                     <div className="h-full w-full p-4 overflow-y-auto [&_button]:cursor-grab [&_button:active]:cursor-grabbing">
                         <div className="space-y-4">
+                            {/* Templates Button */}
+                            <button
+                                type="button"
+                                className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-pink-700 transition-colors cursor-pointer! mb-2"
+                                onClick={() => setActiveRightPanel("templates")}
+                            >
+                                <span className="flex items-center gap-2 font-medium text-sm">
+                                    <LayoutTemplate className="w-4 h-4" />
+                                    Browse Cards
+                                </span>
+                                <ChevronRight className="w-4 h-4 opacity-70" />
+                            </button>
+
+                            <div className="space-y-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveRightPanel("decoratives")}
+                                    className="w-full flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Flower2 className="h-4 w-4" />
+                                        <span className="text-sm font-medium">Decoratives</span>
+                                    </span>
+                                    <ChevronRight className="h-4 w-4 opacity-70" />
+                                </button>
+                            </div>
+
                             <div className="space-y-2">
                                 {renderCategoryButton("text", "Text", Type)}
                                 {openCategory === "text" && (

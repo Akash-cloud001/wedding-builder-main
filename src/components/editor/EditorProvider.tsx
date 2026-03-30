@@ -22,6 +22,7 @@ import { UserModernHero } from "../user/sections/ModernHero";
 import { UserFooter } from "../user/sections/Footer";
 import { UserPrivateEventPopup } from "../user/sections/PrivateEventPopup";
 import { UserNavbar } from "../user/Navbar";
+import { UserDecorative } from "../user/Decorative";
 
 export const craftResolver = {
     UserText,
@@ -43,6 +44,7 @@ export const craftResolver = {
     UserFooter,
     UserPrivateEventPopup,
     UserNavbar,
+    UserDecorative,
 };
 
 export const EditorProvider = ({ children }: { children: React.ReactNode }) => {

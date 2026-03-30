@@ -10,9 +10,11 @@ import { Button } from "../ui/button";
 import { RotateCw, RotateCcw } from "lucide-react";
 import { AnimationSection, getAnimationVariants } from "./AnimationSection";
 import { motion } from "framer-motion";
-import { getSpacing, cn } from "@/lib/utils";
+import { getSpacing, cn, showToast } from "@/lib/utils";
 import { useCanvasDrag } from "./hooks/useCanvasDrag";
 import { useAppContext } from "../editor/AppContext";
+import { useState } from "react";
+import { imageRegistry } from "@/lib/imageRegistry";
 
 const OBJECT_FIT_OPTIONS = [
     { value: "fill", label: "Fill" },
@@ -44,6 +46,35 @@ export const ImageSettings = () => {
     const showFocalPoint = CROP_OBJECT_FITS.includes(objectFit || "");
     const posX = typeof objectPositionX === "number" ? objectPositionX : 50;
     const posY = typeof objectPositionY === "number" ? objectPositionY : 50;
+
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleUploadToCloudinary = async (file: File) => {
+        setIsUploading(true);
+        try {
+            // Generate a local blob URL for immediate preview
+            const blobUrl = URL.createObjectURL(file);
+            
+            // Register this file in our registry, tracking if we are replacing a Cloudinary URL
+            const isOldCloudinary = src && typeof src === "string" && src.includes("res.cloudinary.com");
+            imageRegistry.register(blobUrl, file, isOldCloudinary ? src : undefined);
+
+            // Revoke the old blob URL if it exists to keep memory clean
+            if (src && typeof src === "string" && src.startsWith("blob:")) {
+                URL.revokeObjectURL(src);
+                imageRegistry.unregister(src);
+            }
+
+            // Immediately set the blob URL in the CraftJS state
+            setProp((props: any) => props.src = blobUrl);
+            showToast("Ready to save! Image will be uploaded then.");
+        } catch (error) {
+            console.error("Upload error:", error);
+            showToast("Error processing image.", "#ef4444");
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     return (
         <div className="space-y-4">
@@ -77,22 +108,23 @@ export const ImageSettings = () => {
 
             <div className="space-y-2">
                 <Label>Upload Image</Label>
-                <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        // Revoke previous blob URL to prevent memory leak
-                        if (typeof src === "string" && src.startsWith("blob:")) {
-                            URL.revokeObjectURL(src);
-                        }
-                        const objectUrl = URL.createObjectURL(file);
-                        setProp((props: any) => {
-                            props.src = objectUrl;
-                        });
-                    }}
-                />
+                <div className="flex gap-2 items-center">
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        disabled={isUploading}
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            // Revoke previous blob URL to prevent memory leaks if present
+                            if (typeof src === "string" && src.startsWith("blob:")) {
+                                URL.revokeObjectURL(src);
+                            }
+                            handleUploadToCloudinary(file);
+                        }}
+                    />
+                    {isUploading && <span className="text-xs text-blue-500 font-medium whitespace-nowrap">Uploading...</span>}
+                </div>
             </div>
 
             <div className="space-y-2">

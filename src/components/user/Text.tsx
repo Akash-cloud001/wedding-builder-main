@@ -8,7 +8,7 @@ import { Slider } from "../ui/slider";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import { Bold, Italic, Underline, Strikethrough } from "lucide-react";
+import { Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd } from "lucide-react";
 import { AnimationSection, getAnimationVariants } from "./AnimationSection";
 import { motion } from "framer-motion";
 import { getSpacing, getResponsiveFontSize, getResponsiveSpacing } from "@/lib/utils";
@@ -16,7 +16,7 @@ import { useCanvasDrag } from "./hooks/useCanvasDrag";
 import { useAppContext } from "../editor/AppContext";
 
 export const TextSettings = () => {
-    const { actions: { setProp }, fontSize, color, textAlign, fontWeight, fontStyle, textDecoration, text, fontFamily, height, width, background, borderRadius } = useNode((node) => ({
+    const { actions: { setProp }, fontSize, color, textAlign, fontWeight, fontStyle, textDecoration, text, fontFamily, height, width, background, borderRadius, alignX, alignY, parent } = useNode((node) => ({
         fontSize: node.data.props.fontSize,
         color: node.data.props.color,
         textAlign: node.data.props.textAlign,
@@ -29,7 +29,19 @@ export const TextSettings = () => {
         width: node.data.props.width,
         background: node.data.props.background,
         borderRadius: node.data.props.borderRadius,
+        alignX: node.data.props.alignX,
+        alignY: node.data.props.alignY,
+        parent: node.data.parent,
     }));
+
+    const { parentLayoutMode } = useEditor((state) => {
+        const parentNode = parent && state.nodes[parent] ? state.nodes[parent] : null;
+        return {
+            parentLayoutMode: parentNode ? parentNode.data.props.layoutMode : "flex",
+        };
+    });
+
+    const isCanvas = parentLayoutMode === "canvas";
 
     return (
         <div className="space-y-4">
@@ -52,9 +64,13 @@ export const TextSettings = () => {
                     <option value="sans-serif">Sans Serif</option>
                     <option value="serif">Serif</option>
                     <option value="monospace">Monospace</option>
-                    <option value="'Playfair Display', serif">Playfair Display (Elegant)</option>
-                    <option value="'Montserrat', sans-serif">Montserrat (Modern)</option>
-                    <option value="'Great Vibes', cursive">Great Vibes (Script)</option>
+                    <option value="'Great Vibes', cursive">Elegant Script (Great Vibes)</option>
+                    <option value="'Dancing Script', cursive">Bouncy Script (Dancing Script)</option>
+                    <option value="'Playfair Display', serif">Classic Serif (Playfair Display)</option>
+                    <option value="'Cormorant Garamond', serif">Modern Serif (Cormorant Garamond)</option>
+                    <option value="'Sacramento', cursive">Whimsical (Sacramento)</option>
+                    <option value="'Montserrat', sans-serif">Clean Pairing (Montserrat)</option>
+                    <option value="'Lobster Two', cursive">Retro/Display (Lobster Two)</option>
                 </select>
             </div>
 
@@ -74,6 +90,57 @@ export const TextSettings = () => {
                         });
                     }}
                 />
+            </div>
+
+            <div className="space-y-2">
+                <Label>Container Position</Label>
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                        <span className="text-xs text-muted-foreground block mb-1">X-Axis</span>
+                        <ToggleGroup 
+                            type="single" 
+                            value={alignX || "left"} 
+                            className="justify-start flex-wrap border rounded p-1" 
+                            onValueChange={(v) => { 
+                                if (v) setProp((props: any) => { 
+                                    props.alignX = v; 
+                                    props.textAlign = v; 
+                                    if (isCanvas) {
+                                        if (v === "center") props.left = 50;
+                                        else if (v === "right") props.left = 100;
+                                        else if (v === "left") props.left = 0;
+                                    }
+                                }); 
+                            }}
+                        >
+                            <ToggleGroupItem value="left" className="h-7 px-2"><AlignLeft className="h-4 w-4" /></ToggleGroupItem>
+                            <ToggleGroupItem value="center" className="h-7 px-2"><AlignCenter className="h-4 w-4" /></ToggleGroupItem>
+                            <ToggleGroupItem value="right" className="h-7 px-2"><AlignRight className="h-4 w-4" /></ToggleGroupItem>
+                        </ToggleGroup>
+                    </div>
+                    <div className="space-y-1">
+                        <span className="text-xs text-muted-foreground block mb-1">Y-Axis</span>
+                        <ToggleGroup 
+                            type="single" 
+                            value={alignY || "top"} 
+                            className="justify-start flex-wrap border rounded p-1" 
+                            onValueChange={(v) => { 
+                                if (v) setProp((props: any) => {
+                                    props.alignY = v;
+                                    if (isCanvas) {
+                                        if (v === "center") props.top = 50;
+                                        else if (v === "bottom") props.top = 100;
+                                        else if (v === "top") props.top = 0;
+                                    }
+                                }); 
+                            }}
+                        >
+                            <ToggleGroupItem value="top" className="h-7 px-2"><AlignVerticalJustifyStart className="h-4 w-4" /></ToggleGroupItem>
+                            <ToggleGroupItem value="center" className="h-7 px-2"><AlignVerticalJustifyCenter className="h-4 w-4" /></ToggleGroupItem>
+                            <ToggleGroupItem value="bottom" className="h-7 px-2"><AlignVerticalJustifyEnd className="h-4 w-4" /></ToggleGroupItem>
+                        </ToggleGroup>
+                    </div>
+                </div>
             </div>
 
             <div className="space-y-2">
@@ -165,7 +232,7 @@ export const TextSettings = () => {
     );
 };
 
-export const UserText = ({ text, fontSize, color, textAlign, fontWeight, fontStyle, textDecoration, fontFamily, padding, margin, width, height, baseFontSize, baseHeight, baseWidth, minHeight, background, borderRadius, top, left, animationType, animationDuration, animationDelay }: any) => {
+export const UserText = ({ text, fontSize, color, textAlign, fontWeight, fontStyle, textDecoration, fontFamily, padding, margin, width, height, baseFontSize, baseHeight, baseWidth, minHeight, background, borderRadius, top, left, animationType, animationDuration, animationDelay, alignX, alignY }: any) => {
     const { connectors: { connect, drag }, actions: { setProp }, selected } = useNode((state) => ({
         selected: state.events.selected,
     }));
@@ -173,7 +240,7 @@ export const UserText = ({ text, fontSize, color, textAlign, fontWeight, fontSty
     const { device } = useAppContext();
 
     // Access parent node to check if it's a "canvas" container
-    const { itemStyle } = useCanvasDrag(top, left);
+    const { itemStyle, isCanvas } = useCanvasDrag(top, left);
 
     const [editable, setEditable] = useState(false);
 
@@ -233,7 +300,11 @@ export const UserText = ({ text, fontSize, color, textAlign, fontWeight, fontSty
     const responsiveWidth = device === "mobile" && width && typeof width === "string" && width.includes("px")
         ? "100%"
         : width;
-    const styleWidth = typeof width === "number" ? `${width}px` : responsiveWidth;
+    const styleWidth = typeof width === "number" 
+        ? `${width}px` 
+        : (width === "fit-content" && isCanvas && (alignX === "center" || alignX === "right"))
+            ? "max-content"
+            : responsiveWidth;
     const styleHeight = undefined;
 
     return (
@@ -257,6 +328,13 @@ export const UserText = ({ text, fontSize, color, textAlign, fontWeight, fontSty
                 ...(device === "mobile" 
                     ? { position: "relative", top: 0, left: 0, width: "100%" } 
                     : itemStyle),
+                transform: 
+                    `translate(
+                        ${alignX === "center" ? "-50%" : alignX === "right" ? "-100%" : "0"}, 
+                        ${alignY === "center" ? "-50%" : alignY === "bottom" ? "-100%" : "0"}
+                    ) 
+                    ${(variants.animate as any)?.transform || ""}
+                    ${device === "mobile" ? "!translate-x-0 !translate-y-0" : ""}`,
                 zIndex: selected ? 100 : (device === "mobile" ? 10 : 1),
                 maxWidth: device === "mobile" ? "100%" : undefined,
                 overflow: device === "mobile" ? "hidden" : undefined,
@@ -264,12 +342,25 @@ export const UserText = ({ text, fontSize, color, textAlign, fontWeight, fontSty
                 wordWrap: "break-word",
                 wordBreak: "break-word",
 
-                // For fit-content width, we must align the block itself
                 alignSelf: device === "mobile"
                     ? undefined
-                    : ((responsiveWidth === "fit-content" || responsiveWidth === "auto")
-                        ? (textAlign === "center" ? "center" : textAlign === "right" ? "flex-end" : "flex-start")
-                        : undefined),
+                    : alignX === "center"
+                        ? "center"
+                        : alignX === "right"
+                            ? "flex-end"
+                            : "flex-start",
+                justifyContent: alignY === "center"
+                    ? "center"
+                    : alignY === "bottom"
+                        ? "flex-end"
+                        : "flex-start",
+                alignItems: alignX === "center"
+                    ? "center"
+                    : alignX === "right"
+                        ? "flex-end"
+                        : "flex-start",
+                display: "flex",
+                flexDirection: "column",
             }}
         >
             <ContentEditable
@@ -326,6 +417,8 @@ UserText.craft = {
         baseFontSize: undefined,
         baseHeight: undefined,
         baseWidth: undefined,
+        alignX: "left",
+        alignY: "top",
     },
     related: {
         settings: TextSettings,

@@ -4,7 +4,7 @@
 import { useEditor } from "@craftjs/core";
 import { ROOT_NODE } from "@craftjs/utils";
 import { Button } from "../ui/button";
-import { Monitor, Play, Redo, Save, Smartphone, Undo, FilePlus, FolderOpen, Trash2 } from "lucide-react";
+import { Monitor, Play, Redo, Save, Smartphone, Undo, FilePlus, FolderOpen, Trash2, ClipboardCopy } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { Toggle } from "../ui/toggle";
 import { useAppContext } from "./AppContext";
@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { cn, showToast } from "@/lib/utils";
+import { imageRegistry } from "@/lib/imageRegistry";
 
 interface Template {
     id: string;
@@ -144,7 +145,75 @@ export const Topbar = () => {
     }, []);
 
 
+    const processPendingUploads = async (): Promise<boolean> => {
+        const nodes = query.getNodes();
+        const pendingUploads: { id: string; blobUrl: string; file: File }[] = [];
+
+        // 1. Identify all nodes with pending blob URLs
+        Object.entries(nodes).forEach(([id, node]) => {
+            if ((node.data.type as any).resolvedName === "UserImage" || node.data.displayName === "Image") {
+                const src = node.data.props.src;
+                if (src && typeof src === "string" && src.startsWith("blob:")) {
+                    const file = imageRegistry.getFile(src);
+                    if (file) {
+                        pendingUploads.push({ id, blobUrl: src, file });
+                    }
+                }
+            }
+        });
+
+        if (pendingUploads.length === 0) return true;
+
+        showToast(`Uploading ${pendingUploads.length} image(s)...`);
+
+        try {
+            // 2. Upload each file in parallel
+            await Promise.all(pendingUploads.map(async ({ id, blobUrl, file }) => {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) throw new Error(`Failed to upload ${file.name}`);
+
+                const data = await response.json();
+                if (!data.secure_url) throw new Error(`No URL returned for ${file.name}`);
+
+                // 3. Update the node with the permanent URL
+                actions.setProp(id, (props) => {
+                    props.src = data.secure_url;
+                });
+
+                // 4. Handle cleanup of the old Cloudinary URL if it was replaced
+                const oldUrl = imageRegistry.getReplacedUrl(blobUrl);
+                if (oldUrl) {
+                    fetch('/api/upload', {
+                        method: "DELETE",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: oldUrl })
+                    }).catch(err => console.error("Cloudinary cleanup failed:", err));
+                }
+
+                // 5. Cleanup the local blob and registry entry
+                URL.revokeObjectURL(blobUrl);
+                imageRegistry.unregister(blobUrl);
+            }));
+
+            return true;
+        } catch (e) {
+            console.error("Batch upload failed:", e);
+            showToast("Failed to upload some images. Please try again.", "#ef4444");
+            return false;
+        }
+    };
+
     const handleSave = async () => {
+        const success = await processPendingUploads();
+        if (!success) return;
+
         if (currentTemplateId) {
             // Update existing
             const template = templates.find(t => t.id === currentTemplateId);
@@ -180,6 +249,9 @@ export const Topbar = () => {
     };
 
     const handleCreateNewTemplate = async () => {
+        const success = await processPendingUploads();
+        if (!success) return;
+
         const id = crypto.randomUUID();
         const name = newTemplateName.trim() || "Untitled Project";
 
@@ -240,6 +312,38 @@ export const Topbar = () => {
             broadcastPagesState(pageIds, currentTemplateId, newTemplates);
         }
         showToast("Template deleted", "#ef4444");
+    };
+
+    const handleExportTemplate = async () => {
+        const success = await processPendingUploads();
+        if (!success) return;
+
+        try {
+            const name = window.prompt("Enter a name for this new Template:", "My Custom Template");
+            if (!name) return;
+
+            const rawJson = query.serialize();
+            const templateJson = {
+                id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + "-" + Math.floor(Math.random() * 1000),
+                name: name,
+                data: JSON.parse(rawJson)
+            };
+
+            const response = await fetch('/api/save-template', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(templateJson)
+            });
+
+            if (response.ok) {
+                showToast(`Template "${name}" saved to templates.json!`);
+            } else {
+                throw new Error("Failed response from server");
+            }
+        } catch (e) {
+            console.error(e);
+            showToast("Failed to save template to JSON", "#ef4444");
+        }
     };
 
     const handleAddSection = () => {
@@ -492,6 +596,10 @@ export const Topbar = () => {
                 <Button variant="outline" size="sm" onClick={handleSave} className="bg-green-50 hover:bg-green-100 border-green-200 text-green-700">
                     <Save className="h-4 w-4 mr-2" />
                     {currentTemplateId ? "Save" : "Save As"}
+                </Button>
+
+                <Button variant="outline" size="sm" onClick={handleExportTemplate} title="Save to Templates.json">
+                    <ClipboardCopy className="h-4 w-4 text-gray-700" />
                 </Button>
 
                 <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>

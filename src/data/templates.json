@@ -1,0 +1,942 @@
+[
+    {
+        "id": "wedding-hero-refined",
+        "name": "Wedding Hero Refined",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "100%",
+                    "height": "100vh",
+                    "position": "relative",
+                    "overflow": "hidden"
+                },
+                "nodes": [
+                    "bg",
+                    "overlay",
+                    "inner"
+                ]
+            },
+            "bg": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "props": {
+                    "src": "https://images.unsplash.com/photo-1519741497674-611481863552",
+                    "width": "100%",
+                    "height": "100%",
+                    "objectFit": "cover",
+                    "position": "absolute",
+                    "top": 0,
+                    "left": 0
+                },
+                "parent": "ROOT"
+            },
+            "overlay": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "props": {
+                    "position": "absolute",
+                    "top": 0,
+                    "left": 0,
+                    "width": "100%",
+                    "height": "100%",
+                    "background": "linear-gradient(to right, rgba(0,0,0,0.6), rgba(0,0,0,0.2))"
+                },
+                "parent": "ROOT"
+            },
+            "inner": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "position": "relative",
+                    "zIndex": 2,
+                    "maxWidth": "1200px",
+                    "margin": "0 auto",
+                    "height": "100%",
+                    "display": "flex",
+                    "alignItems": "center",
+                    "padding": "0 24px"
+                },
+                "nodes": [
+                    "content"
+                ],
+                "parent": "ROOT"
+            },
+            "content": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "maxWidth": "600px",
+                    "color": "#ffffff",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "gap": 20
+                },
+                "nodes": [
+                    "names",
+                    "title",
+                    "date"
+                ],
+                "parent": "inner"
+            },
+            "names": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "MARIO & RACHEL",
+                    "fontSize": 14,
+                    "letterSpacing": 4,
+                    "textTransform": "uppercase",
+                    "opacity": 0.85,
+                    "textAlign": "center",
+                    "width": "100%"
+                },
+                "parent": "content"
+            },
+            "title": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "The Wedding",
+                    "fontSize": 72,
+                    "lineHeight": 1.1,
+                    "fontFamily": "Great Vibes, cursive",
+                    "textAlign": "center",
+                    "width": "100%"
+                },
+                "parent": "content"
+            },
+            "date": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "2027.10.10",
+                    "fontSize": 16,
+                    "letterSpacing": 6,
+                    "textAlign": "center",
+                    "width": "100%"
+                },
+                "parent": "content"
+            }
+        }
+    },
+    {
+        "id": "save-the-date-refined",
+        "name": "Save The Date Refined",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "100%",
+                    "minHeight": "100vh",
+                    "background": "#ffffff"
+                },
+                "nodes": [
+                    "inner"
+                ]
+            },
+            "inner": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "maxWidth": "1200px",
+                    "margin": "0 auto",
+                    "padding": "60px 24px",
+                    "display": "flex",
+                    "flexDirection": "column"
+                },
+                "nodes": [
+                    "textBlock",
+                    "image"
+                ],
+                "parent": "ROOT"
+            },
+            "textBlock": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "gap": 12
+                },
+                "nodes": [
+                    "heading",
+                    "names",
+                    "date"
+                ],
+                "parent": "inner"
+            },
+            "heading": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "Save the Date",
+                    "fontSize": 48,
+                    "fontFamily": "Playfair Display"
+                },
+                "parent": "textBlock"
+            },
+            "names": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "MARTIN & CHLOE",
+                    "letterSpacing": 4,
+                    "fontSize": 18,
+                    "opacity": 0.7
+                },
+                "parent": "textBlock"
+            },
+            "date": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "AUG 10 2024",
+                    "fontSize": 28,
+                    "marginTop": 10
+                },
+                "parent": "textBlock"
+            },
+            "image": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "props": {
+                    "src": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
+                    "width": "100%",
+                    "height": "500px",
+                    "objectFit": "cover",
+                    "borderRadius": 12
+                },
+                "parent": "inner"
+            }
+        }
+    },
+    {
+        "id": "wedding-card-refined",
+        "name": "Wedding Card Refined",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "background": "#f8f5f2",
+                    "padding": "80px 20px",
+                    "display": "flex",
+                    "justifyContent": "center"
+                },
+                "nodes": [
+                    "card"
+                ]
+            },
+            "card": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "100%",
+                    "maxWidth": "420px",
+                    "background": "#ffffff",
+                    "padding": 40,
+                    "borderRadius": 24,
+                    "textAlign": "center",
+                    "boxShadow": "0 20px 60px rgba(0,0,0,0.08)",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "gap": 20
+                },
+                "nodes": [
+                    "title",
+                    "names",
+                    "image",
+                    "details"
+                ],
+                "parent": "ROOT"
+            },
+            "title": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "UNDANGAN PERNIKAHAN",
+                    "fontSize": 12,
+                    "letterSpacing": 3,
+                    "opacity": 0.6
+                },
+                "parent": "card"
+            },
+            "names": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "Olivia & Chiaki",
+                    "fontSize": 30,
+                    "fontFamily": "Playfair Display"
+                },
+                "parent": "card"
+            },
+            "image": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "props": {
+                    "src": "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
+                    "width": "100%",
+                    "height": "260px",
+                    "objectFit": "cover",
+                    "borderRadius": 999
+                },
+                "parent": "card"
+            },
+            "details": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "10 / 12 / 2023\nHotel Borcelle",
+                    "fontSize": 14,
+                    "lineHeight": 1.6,
+                    "opacity": 0.7
+                },
+                "parent": "card"
+            }
+        }
+    },
+    {
+        "id": "modern-invitation",
+        "name": "Modern Elegance Invitation",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "100%",
+                    "minHeight": "100vh",
+                    "background": "#F5F3EF",
+                    "padding": "60px 20px",
+                    "display": "flex",
+                    "alignItems": "center",
+                    "justifyContent": "center"
+                },
+                "nodes": [
+                    "invitation-card"
+                ]
+            },
+            "invitation-card": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "100%",
+                    "maxWidth": "500px",
+                    "background": "#ffffff",
+                    "borderRadius": 8,
+                    "boxShadow": "0 10px 40px rgba(0,0,0,0.05)",
+                    "overflow": "hidden",
+                    "display": "flex",
+                    "flexDirection": "column"
+                },
+                "nodes": [
+                    "card-image",
+                    "card-content"
+                ],
+                "parent": "ROOT"
+            },
+            "card-image": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "props": {
+                    "src": "https://images.unsplash.com/photo-1543883193-456cb33a1d94",
+                    "width": "100%",
+                    "height": "300px",
+                    "objectFit": "cover"
+                },
+                "parent": "invitation-card"
+            },
+            "card-content": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "padding": "50px 30px",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "alignItems": "center",
+                    "gap": 24,
+                    "textAlign": "center"
+                },
+                "nodes": [
+                    "pre-title",
+                    "names",
+                    "invitation-text",
+                    "details",
+                    "rsvp-button"
+                ],
+                "parent": "invitation-card"
+            },
+            "pre-title": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "TOGETHER WITH THEIR FAMILIES",
+                    "fontSize": 11,
+                    "letterSpacing": 3,
+                    "color": "#6B7280"
+                },
+                "parent": "card-content"
+            },
+            "names": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "Alexander & Sophie",
+                    "fontSize": 42,
+                    "fontFamily": "Playfair Display",
+                    "color": "#1F2937"
+                },
+                "parent": "card-content"
+            },
+            "invitation-text": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "Request the honor of your presence\nat their wedding celebration",
+                    "fontSize": 14,
+                    "lineHeight": 1.6,
+                    "color": "#4B5563",
+                    "fontStyle": "italic"
+                },
+                "parent": "card-content"
+            },
+            "details": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "SATURDAY, AUGUST 26, 2028\nAT FOUR O'CLOCK IN THE AFTERNOON\n\nTHE BOTANICAL GARDENS\n123 FLORA WAY, SEATTLE, WA",
+                    "fontSize": 13,
+                    "lineHeight": 1.8,
+                    "letterSpacing": 1,
+                    "color": "#374151"
+                },
+                "parent": "card-content"
+            },
+            "rsvp-button": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "props": {
+                    "marginTop": 16,
+                    "padding": "12px 32px",
+                    "background": "#1F2937",
+                    "color": "#FFFFFF",
+                    "borderRadius": 4,
+                    "cursor": "pointer"
+                },
+                "nodes": [
+                    "rsvp-text"
+                ],
+                "parent": "card-content"
+            },
+            "rsvp-text": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "RSVP NOW",
+                    "fontSize": 12,
+                    "letterSpacing": 2,
+                    "color": "#FFFFFF"
+                },
+                "parent": "rsvp-button"
+            }
+        }
+    },
+    {
+        "id": "minimalist-split-wedding",
+        "name": "Minimalist Split Layout",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "100%",
+                    "minHeight": "100vh",
+                    "background": "#FFFFFF",
+                    "display": "flex",
+                    "flexDirection": "row",
+                    "flexWrap": "wrap",
+                    "padding": "0"
+                },
+                "nodes": [
+                    "left-image",
+                    "right-content"
+                ]
+            },
+            "left-image": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "50%",
+                    "minHeight": "600px",
+                    "background": "#f3f4f6",
+                    "display": "flex"
+                },
+                "nodes": [
+                    "bg-image"
+                ],
+                "parent": "ROOT"
+            },
+            "bg-image": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "props": {
+                    "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc",
+                    "width": "100%",
+                    "height": "100%",
+                    "objectFit": "cover"
+                },
+                "parent": "left-image"
+            },
+            "right-content": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "width": "50%",
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "justifyContent": "center",
+                    "padding": "80px 60px",
+                    "background": "#FFFFFF",
+                    "gap": 32
+                },
+                "nodes": [
+                    "date-badge",
+                    "main-heading",
+                    "divider",
+                    "description-text",
+                    "venue-info"
+                ],
+                "parent": "ROOT"
+            },
+            "date-badge": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "14 . 05 . 2027",
+                    "fontSize": 14,
+                    "letterSpacing": 4,
+                    "color": "#9CA3AF"
+                },
+                "parent": "right-content"
+            },
+            "main-heading": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "Julian & Emma",
+                    "fontSize": 64,
+                    "fontFamily": "Playfair Display",
+                    "lineHeight": 1.1,
+                    "color": "#111827"
+                },
+                "parent": "right-content"
+            },
+            "divider": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "props": {
+                    "width": "60px",
+                    "height": "2px",
+                    "background": "#E5E7EB"
+                },
+                "parent": "right-content"
+            },
+            "description-text": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "We are thrilled to celebrate our special day with you. Join us in the mountains for a weekend of love, laughter, and lifelong memories.",
+                    "fontSize": 16,
+                    "lineHeight": 1.7,
+                    "color": "#4B5563"
+                },
+                "parent": "right-content"
+            },
+            "venue-info": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "props": {
+                    "text": "CEREMONY & RECEPTION\nPine Peak Lodge, Colorado\n5:00 PM EST",
+                    "fontSize": 14,
+                    "lineHeight": 1.6,
+                    "letterSpacing": 1,
+                    "color": "#111827"
+                },
+                "parent": "right-content"
+            }
+        }
+    },
+    {
+        "id": "my-custom-template-911",
+        "name": "My Custom Template",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "background": "#ffffff",
+                    "padding": 0,
+                    "margin": 0,
+                    "backgroundImage": "",
+                    "flexDirection": "column",
+                    "alignItems": "flex-start",
+                    "justifyContent": "flex-start",
+                    "flexWrap": "nowrap",
+                    "gap": 10,
+                    "gridColumns": 1,
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "height": "auto",
+                    "minHeight": "100vh",
+                    "width": "100%",
+                    "layoutMode": "canvas",
+                    "top": 0,
+                    "left": 0,
+                    "positionType": "relative"
+                },
+                "displayName": "Container",
+                "custom": {
+                    "displayName": "Canvas"
+                },
+                "hidden": false,
+                "nodes": [
+                    "Tv_xXavpPj",
+                    "V6jF-pTkXw",
+                    "-NxEKxJ9mZ"
+                ],
+                "linkedNodes": {}
+            },
+            "-NxEKxJ9mZ": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "isCanvas": false,
+                "props": {
+                    "text": "Paragraph",
+                    "fontSize": 16,
+                    "color": "#000000",
+                    "textAlign": "left",
+                    "fontWeight": "normal",
+                    "fontStyle": "normal",
+                    "textDecoration": "none",
+                    "fontFamily": "sans-serif",
+                    "padding": 0,
+                    "margin": 0,
+                    "width": "fit-content",
+                    "minHeight": "auto",
+                    "background": "transparent",
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 28.91,
+                    "left": 5.22,
+                    "alignX": "left",
+                    "alignY": "top",
+                    "positionType": "absolute"
+                },
+                "displayName": "Text",
+                "custom": {
+                    "displayName": "Paragraph"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "Tv_xXavpPj": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "isCanvas": false,
+                "props": {
+                    "text": "Heading",
+                    "fontSize": 26,
+                    "color": "#000000",
+                    "textAlign": "left",
+                    "fontWeight": "bold",
+                    "fontStyle": "normal",
+                    "textDecoration": "none",
+                    "fontFamily": "sans-serif",
+                    "padding": 0,
+                    "margin": 0,
+                    "width": "fit-content",
+                    "minHeight": "auto",
+                    "background": "transparent",
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 27.15,
+                    "left": 44.68,
+                    "alignX": "left",
+                    "alignY": "top",
+                    "positionType": "absolute"
+                },
+                "displayName": "Text",
+                "custom": {
+                    "displayName": "Heading"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "V6jF-pTkXw": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "isCanvas": false,
+                "props": {
+                    "src": "blob:http://localhost:3000/5cc64c0e-880b-442a-8635-226328f45117",
+                    "width": "400px",
+                    "height": "300px",
+                    "padding": 0,
+                    "margin": 0,
+                    "background": "transparent",
+                    "minHeight": "auto",
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "align": "center",
+                    "top": 36.7,
+                    "left": 4.45,
+                    "grayscale": false,
+                    "objectFit": "cover",
+                    "objectPositionX": 50,
+                    "objectPositionY": 50,
+                    "rotation": 0,
+                    "positionType": "absolute"
+                },
+                "displayName": "Image",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            }
+        }
+    },
+    {
+        "id": "my-custom-template-791",
+        "name": "My Custom Template",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "background": "#ffffff",
+                    "padding": 0,
+                    "margin": 0,
+                    "backgroundImage": "",
+                    "flexDirection": "column",
+                    "alignItems": "flex-start",
+                    "justifyContent": "flex-start",
+                    "flexWrap": "nowrap",
+                    "gap": 10,
+                    "gridColumns": 1,
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "height": "auto",
+                    "minHeight": "100vh",
+                    "width": "100%",
+                    "layoutMode": "canvas",
+                    "top": 0,
+                    "left": 0,
+                    "positionType": "relative"
+                },
+                "displayName": "Container",
+                "custom": {
+                    "displayName": "Canvas"
+                },
+                "hidden": false,
+                "nodes": [
+                    "node-16c3a105-a7e2-4a25-a5dc-eac1453fc97b"
+                ],
+                "linkedNodes": {}
+            },
+            "node-16c3a105-a7e2-4a25-a5dc-eac1453fc97b": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "background": "#ffffff",
+                    "padding": 0,
+                    "margin": 0,
+                    "backgroundImage": "",
+                    "flexDirection": "column",
+                    "alignItems": "flex-start",
+                    "justifyContent": "flex-start",
+                    "flexWrap": "nowrap",
+                    "gap": 10,
+                    "gridColumns": 1,
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "height": 733.5,
+                    "minHeight": "100vh",
+                    "width": 734.5,
+                    "layoutMode": "canvas",
+                    "top": 0.14,
+                    "left": 0.14,
+                    "positionType": "absolute"
+                },
+                "displayName": "Container",
+                "custom": {
+                    "displayName": "Canvas"
+                },
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [
+                    "node-ade8cce4-e8de-44bb-9fd4-a2bd71d43bd7",
+                    "node-1d6ab309-2dd9-47e6-9354-40dc8a19e803"
+                ],
+                "linkedNodes": {}
+            },
+            "node-1d6ab309-2dd9-47e6-9354-40dc8a19e803": {
+                "type": {
+                    "resolvedName": "UserText"
+                },
+                "isCanvas": false,
+                "props": {
+                    "text": "Romeo Weds Juliet",
+                    "fontSize": 63,
+                    "color": "#000000",
+                    "textAlign": "center",
+                    "fontWeight": "normal",
+                    "fontStyle": "normal",
+                    "textDecoration": "none",
+                    "fontFamily": "'Sacramento', cursive",
+                    "padding": 0,
+                    "margin": 0,
+                    "width": 532,
+                    "height": 95,
+                    "minHeight": "auto",
+                    "background": "transparent",
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 63.88,
+                    "left": 50,
+                    "baseFontSize": 16,
+                    "baseHeight": 24,
+                    "baseWidth": 87,
+                    "alignX": "center",
+                    "alignY": "top",
+                    "positionType": "absolute"
+                },
+                "displayName": "Text",
+                "custom": {
+                    "displayName": "Paragraph"
+                },
+                "parent": "node-16c3a105-a7e2-4a25-a5dc-eac1453fc97b",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "node-ade8cce4-e8de-44bb-9fd4-a2bd71d43bd7": {
+                "type": {
+                    "resolvedName": "UserImage"
+                },
+                "isCanvas": false,
+                "props": {
+                    "src": "https://res.cloudinary.com/dsyikt6vq/image/upload/v1774874341/wedding-builder/izlwd8czssktwhikl9wn.jpg",
+                    "width": 733,
+                    "height": 454,
+                    "padding": 0,
+                    "margin": 0,
+                    "background": "transparent",
+                    "minHeight": "auto",
+                    "borderRadius": 44,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "align": "center",
+                    "top": 0,
+                    "left": 0,
+                    "grayscale": false,
+                    "objectFit": "cover",
+                    "objectPositionX": 50,
+                    "objectPositionY": 13,
+                    "rotation": 0,
+                    "positionType": "absolute"
+                },
+                "displayName": "Image",
+                "custom": {},
+                "parent": "node-16c3a105-a7e2-4a25-a5dc-eac1453fc97b",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            }
+        }
+    }
+]

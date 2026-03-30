@@ -14,6 +14,8 @@ interface AppContextType {
     saveSection: (section: string, json: string) => void;
     loadSection: (section: string) => string | null;
     sections: Record<string, string>;
+    activeRightPanel: "properties" | "templates" | "decoratives";
+    setActiveRightPanel: (panel: "properties" | "templates" | "decoratives") => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [preview, setPreview] = useState(false);
     const [currentSection, setCurrentSection] = useState("Home");
     const [sections, setSections] = useState<Record<string, string>>({});
+    const [activeRightPanel, setActiveRightPanel] = useState<"properties" | "templates" | "decoratives">("properties");
 
     const saveSection = (section: string, json: string) => {
         setSections((prev) => ({
@@ -45,7 +48,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             setCurrentSection,
             saveSection,
             loadSection,
-            sections
+            sections,
+            activeRightPanel,
+            setActiveRightPanel
         }}>
             {children}
         </AppContext.Provider>
