@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    return new Promise((resolve, reject) => {
+    return new Promise<Response>((resolve) => {
       cloudinary.uploader.upload_stream(
         { folder: "wedding-builder" },
         (error, result) => {
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: Request): Promise<Response> {
   try {
     const { url } = await request.json();
 
@@ -70,7 +70,7 @@ export async function DELETE(request: Request) {
        return NextResponse.json({ error: "Could not parse public ID" }, { status: 400 });
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<Response>((resolve) => {
       cloudinary.uploader.destroy(publicId, (error, result) => {
         if (error) {
           console.error("Cloudinary destroy failed:", error);
