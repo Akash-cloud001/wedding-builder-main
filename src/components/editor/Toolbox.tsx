@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
-import { Type, Image as ImageIcon, Square, Youtube, Columns, Grid } from "lucide-react";
+import { Type, Image as ImageIcon, Square, Youtube, Columns, Grid, ChevronDown, ChevronRight } from "lucide-react";
 import { Layers } from "@craftjs/layers";
 import { UserText } from "../user/Text";
 import { UserContainer } from "../user/Container";
@@ -47,7 +47,7 @@ export const Toolbox = () => {
                 <span className="text-sm font-medium">{label}</span>
             </span>
             <span className="text-xs text-gray-400">
-                {openCategory === id ? "Hide" : "Show"}
+                <ChevronDown className={`${openCategory === id ? "-rotate-180" : "-rotate-90"} h-4 w-4 transition-transform duration-200`} />
             </span>
         </button>
     );
