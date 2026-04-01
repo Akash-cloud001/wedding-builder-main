@@ -76,12 +76,12 @@ export const Toolbox = () => {
                             {/* Templates Button */}
                             <button
                                 type="button"
-                                className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-pink-700 transition-colors cursor-pointer! mb-2"
+                                className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer! mb-2"
                                 onClick={() => setActiveRightPanel("templates")}
                             >
                                 <span className="flex items-center gap-2 font-medium text-sm">
                                     <LayoutTemplate className="w-4 h-4" />
-                                    Browse Cards
+                                    Templates
                                 </span>
                                 <ChevronRight className="w-4 h-4 opacity-70" />
                             </button>

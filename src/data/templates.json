@@ -938,5 +938,221 @@
                 "linkedNodes": {}
             }
         }
+    },
+    {
+        "id": "my-custom-template-547",
+        "name": "My Custom Template",
+        "data": {
+            "ROOT": {
+                "type": {
+                    "resolvedName": "UserContainer"
+                },
+                "isCanvas": true,
+                "props": {
+                    "background": "#ffffff",
+                    "padding": 0,
+                    "margin": 0,
+                    "backgroundImage": "",
+                    "flexDirection": "column",
+                    "alignItems": "flex-start",
+                    "justifyContent": "flex-start",
+                    "flexWrap": "nowrap",
+                    "gap": 10,
+                    "gridColumns": 1,
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "height": "auto",
+                    "minHeight": "100vh",
+                    "width": "100%",
+                    "layoutMode": "canvas",
+                    "top": 0,
+                    "left": 0,
+                    "positionType": "relative"
+                },
+                "displayName": "Container",
+                "custom": {
+                    "displayName": "Canvas"
+                },
+                "hidden": false,
+                "nodes": [
+                    "Y1M_ctwMJi",
+                    "xgPcSIWAqf",
+                    "t1rPOYNth1",
+                    "2ksHN57edF",
+                    "y321M-6ddp",
+                    "EU5SXZiBcd"
+                ],
+                "linkedNodes": {}
+            },
+            "EU5SXZiBcd": {
+                "type": {
+                    "resolvedName": "UserDecorative"
+                },
+                "isCanvas": false,
+                "props": {
+                    "src": "/shapes/decorative-shape/Frame 254.svg",
+                    "width": 406,
+                    "height": 274,
+                    "rotation": 0,
+                    "opacity": 0.39,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 0,
+                    "left": 19.6,
+                    "positionType": "absolute",
+                    "radius": 41
+                },
+                "displayName": "Decorative",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "Y1M_ctwMJi": {
+                "type": {
+                    "resolvedName": "UserDecorative"
+                },
+                "isCanvas": false,
+                "props": {
+                    "src": "/shapes/decorative-shape/Frame 253.svg",
+                    "width": 200,
+                    "height": "auto",
+                    "rotation": 0,
+                    "opacity": 1,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 0,
+                    "left": 73.33,
+                    "positionType": "absolute"
+                },
+                "displayName": "Decorative",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "xgPcSIWAqf": {
+                "type": {
+                    "resolvedName": "UserDecorative"
+                },
+                "isCanvas": false,
+                "props": {
+                    "src": "/shapes/decorative-stickers/Frame 257.png",
+                    "width": 141,
+                    "height": 339,
+                    "rotation": 0,
+                    "opacity": 1,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 0.59,
+                    "left": 0.87,
+                    "positionType": "absolute",
+                    "radius": 44
+                },
+                "displayName": "Decorative",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "t1rPOYNth1": {
+                "type": {
+                    "resolvedName": "UserInput"
+                },
+                "isCanvas": false,
+                "props": {
+                    "placeholder": "Enter text...",
+                    "value": "",
+                    "type": "text",
+                    "padding": 0,
+                    "margin": 0,
+                    "width": 444,
+                    "top": 62.77,
+                    "left": 21.61,
+                    "background": "transparent",
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "positionType": "absolute"
+                },
+                "displayName": "Input",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "2ksHN57edF": {
+                "type": {
+                    "resolvedName": "UserTextarea"
+                },
+                "isCanvas": false,
+                "props": {
+                    "placeholder": "Enter details...",
+                    "value": "",
+                    "rows": 4,
+                    "padding": 0,
+                    "margin": 0,
+                    "width": "60%",
+                    "top": 70.4,
+                    "left": 20.99,
+                    "background": "transparent",
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "positionType": "absolute"
+                },
+                "displayName": "Textarea",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            },
+            "y321M-6ddp": {
+                "type": {
+                    "resolvedName": "UserButton"
+                },
+                "isCanvas": false,
+                "props": {
+                    "text": "Click Me",
+                    "url": "",
+                    "variant": "default",
+                    "size": "default",
+                    "padding": 0,
+                    "margin": 0,
+                    "width": "auto",
+                    "background": "#000000",
+                    "color": "#ffffff",
+                    "borderColor": "transparent",
+                    "borderWidth": 2,
+                    "borderRadius": 0,
+                    "animationType": "none",
+                    "animationDuration": 0.5,
+                    "animationDelay": 0,
+                    "top": 87.6,
+                    "left": 42.56,
+                    "fontSize": 14,
+                    "linkTarget": "same_tab",
+                    "positionType": "absolute"
+                },
+                "displayName": "Button",
+                "custom": {},
+                "parent": "ROOT",
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {}
+            }
+        }
     }
 ]
