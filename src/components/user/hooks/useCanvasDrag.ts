@@ -1,24 +1,30 @@
 "use no memo";
 import { useEditor, useNode } from "@craftjs/core";
 import { useAppContext } from "../../editor/AppContext";
-import { useEffect } from "react";
-
-type PendingDropPosition = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    containerId: string;
-    ts: number;
-};
+import { useLayoutEffect } from "react";
+import type { CSSProperties } from "react";
+import type { PendingCanvasDropPosition } from "@/lib/canvasToolboxPlacement";
 
 export const useCanvasDrag = (top: number, left: number) => {
     const {
         parent,
         actions: { setProp },
-    } = useNode((node) => ({
-        parent: node.data.parent,
-    }));
+        resolvedName,
+        canvasTranslateCenter,
+    } = useNode((node) => {
+        const t = node.data.type as { resolvedName?: string } | string;
+        const resolvedName =
+            typeof t === "object" && t && "resolvedName" in t
+                ? t.resolvedName ?? ""
+                : typeof t === "string"
+                  ? t
+                  : "";
+        return {
+            parent: node.data.parent,
+            resolvedName,
+            canvasTranslateCenter: node.data.props.canvasTranslateCenter === true,
+        };
+    });
 
     const { device } = useAppContext();
     const isMobile = device === "mobile";
@@ -32,14 +38,15 @@ export const useCanvasDrag = (top: number, left: number) => {
 
     const isFree = parentLayoutMode === "canvas";
 
-    useEffect(() => {
+    // useLayoutEffect: apply drop position before paint to avoid a flash at top/left 0.
+    useLayoutEffect(() => {
         if (typeof window === "undefined") return;
         if (!isFree || isMobile) return;
         if (!parent) return;
         // Only initialize just-created dropped nodes; don't move existing nodes.
         if ((top ?? 0) !== 0 || (left ?? 0) !== 0) return;
 
-        const pending = (window as Window & { __craft_drop_pos?: PendingDropPosition }).__craft_drop_pos;
+        const pending = (window as Window & { __craft_drop_pos?: PendingCanvasDropPosition }).__craft_drop_pos;
         if (!pending) return;
         if (pending.containerId !== parent) return;
         // Ignore stale drag-over values.
@@ -49,26 +56,34 @@ export const useCanvasDrag = (top: number, left: number) => {
         const nextLeft = Math.max(0, Math.min(100, (pending.x / pending.width) * 100));
         const nextTop = Math.max(0, Math.min(100, (pending.y / pending.height) * 100));
 
-        setProp((props: { left?: number; top?: number; positionType?: string }) => {
+        setProp((props: Record<string, unknown>) => {
             props.left = Math.round(nextLeft * 100) / 100;
             props.top = Math.round(nextTop * 100) / 100;
-            // Keep existing free-move semantics in desktop canvas.
             props.positionType = "absolute";
+
+            if (pending.anchor === "center") {
+                if (resolvedName === "UserText") {
+                    props.alignX = "center";
+                    props.alignY = "center";
+                    props.canvasTranslateCenter = false;
+                } else {
+                    props.canvasTranslateCenter = true;
+                }
+            }
         });
 
-        // Consume once so one drop only positions the newly dropped node.
-        delete (window as Window & { __craft_drop_pos?: PendingDropPosition }).__craft_drop_pos;
-    }, [isFree, isMobile, left, parent, setProp, top]);
+        delete (window as Window & { __craft_drop_pos?: PendingCanvasDropPosition }).__craft_drop_pos;
+    }, [isFree, isMobile, left, parent, resolvedName, setProp, top]);
 
-    // On mobile, convert absolute positioning to relative to prevent off-screen elements
-    const itemStyle: React.CSSProperties = isFree && !isMobile
+    const centerTransform =
+        isFree && !isMobile && canvasTranslateCenter ? "translate(-50%, -50%)" : undefined;
+
+    const itemStyle: CSSProperties = isFree && !isMobile
         ? {
             position: "absolute",
-            // Backward-compat:
-            // - New behavior stores `top/left` as percentages (0..100).
-            // - Legacy projects may still have px values; if > 100, render as px.
             top: top > 100 ? `${top}px` : `${top}%`,
             left: left > 100 ? `${left}px` : `${left}%`,
+            ...(centerTransform ? { transform: centerTransform } : {}),
         }
         : {
         position: "relative",
@@ -77,7 +92,7 @@ export const useCanvasDrag = (top: number, left: number) => {
     };
 
     return {
-        isCanvas: isFree && !isMobile, // Don't treat as canvas on mobile
+        isCanvas: isFree && !isMobile,
         itemStyle
     };
 };

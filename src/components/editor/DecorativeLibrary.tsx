@@ -3,6 +3,11 @@
 
 import React from "react";
 import { useEditor } from "@craftjs/core";
+import { ROOT_NODE } from "@craftjs/utils";
+import {
+    applyCenterPlacementToRootTree,
+    resolveToolboxDropParentId,
+} from "@/lib/canvasToolboxPlacement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { UserDecorative } from "../user/Decorative";
 import { Label } from "../ui/label";
@@ -38,15 +43,24 @@ const DECORATIVE_STICKERS = [
 
 
 export const DecorativeLibrary = () => {
-    const { connectors, actions } = useEditor();
+    const { connectors, actions, query } = useEditor();
     const { setActiveRightPanel } = useAppContext();
 
     const handleAddItem = (path: string) => {
         try {
-            actions.add(
-                <UserDecorative src={path} width={200} height="auto" /> as any,
-                "ROOT"
-            );
+            delete (window as Window & { __craft_drop_pos?: unknown }).__craft_drop_pos;
+            const parentId = resolveToolboxDropParentId(query);
+            const nodes = query.getNodes();
+            const targetParent =
+                nodes[parentId]?.data ? parentId : ROOT_NODE;
+
+            const tree = query
+                .parseReactElement(
+                    <UserDecorative src={path} width={200} height="auto" />
+                )
+                .toNodeTree();
+            applyCenterPlacementToRootTree(tree);
+            actions.addNodeTree(tree, targetParent);
         } catch (error) {
             console.error("Failed to add decorative item:", error);
         }

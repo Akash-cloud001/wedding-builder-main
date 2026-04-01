@@ -28,18 +28,74 @@ import { UserModernHero } from "../user/sections/ModernHero";
 // import { UserFooter } from "../user/sections/Footer";
 // import { UserNavbar } from "../user/Navbar";
 // import { UserPrivateEventPopup } from "../user/sections/PrivateEventPopup";
-import { MousePointerClick, TextCursorInput, ToggleRight, SlidersHorizontal, Tag, RectangleHorizontal, Sparkles, PieChart, Table as TableIcon, Smile, LayoutTemplate, PanelBottom, Lock } from "lucide-react";
+import { MousePointerClick, TextCursorInput, ToggleRight, SlidersHorizontal, Tag, RectangleHorizontal, Sparkles, PieChart, Table as TableIcon, Smile, LayoutTemplate } from "lucide-react";
 
 import { useAppContext } from "./AppContext";
+import { showToast } from "@/lib/utils";
+import {
+    applyCenterPlacementToRootTree,
+    resolveToolboxDropParentId,
+} from "@/lib/canvasToolboxPlacement";
 
 type CategoryId = "text" | "media" | "layout" | "elements" | "decoratives";
 
+type ToolboxPaletteButtonProps = {
+    craftSource: React.ReactElement;
+    className?: string;
+    variant?: React.ComponentProps<typeof Button>["variant"];
+    children: React.ReactNode;
+};
+
+/** Drag from toolbox or click to insert centered on the main canvas (desktop). */
+function ToolboxPaletteButton({
+    craftSource,
+    className,
+    variant = "outline",
+    children,
+}: ToolboxPaletteButtonProps) {
+    const { connectors, actions, query } = useEditor();
+    return (
+        <Button
+            type="button"
+            variant={variant}
+            className={className}
+            ref={(r) => {
+                if (r) connectors.create(r, craftSource);
+            }}
+            onClick={(e) => {
+                e.preventDefault();
+                delete (window as Window & { __craft_drop_pos?: unknown }).__craft_drop_pos;
+
+                const parentId = resolveToolboxDropParentId(query);
+                const parentNode = query.getNodes()[parentId];
+                if (!parentNode?.data) {
+                    showToast("Canvas is not ready. Try again.", "#ef4444");
+                    return;
+                }
+
+                let tree;
+                try {
+                    tree = query.parseReactElement(craftSource).toNodeTree();
+                } catch (err) {
+                    console.error("Toolbox click add failed:", err);
+                    showToast("Could not add component.", "#ef4444");
+                    return;
+                }
+
+                applyCenterPlacementToRootTree(tree);
+                actions.addNodeTree(tree, parentId);
+            }}
+        >
+            {children}
+        </Button>
+    );
+}
+
 export const Toolbox = () => {
-    const { connectors } = useEditor();
     const { setActiveRightPanel } = useAppContext();
     const [openCategory, setOpenCategory] = React.useState<CategoryId | null>(null);
 
-    const renderCategoryButton = (id: CategoryId, label: string, Icon: React.ComponentType<any>) => (
+    const renderCategoryButton = (id: CategoryId, label: string, Icon: React.ComponentType<{ className?: string }>) => (
         <button
             type="button"
             onClick={() => setOpenCategory(openCategory === id ? null : id)}
@@ -59,7 +115,7 @@ export const Toolbox = () => {
         <div className="h-full flex flex-col bg-white">
             <div className="p-4 border-b">
                 <h2 className="text-xl font-bold">Toolbox</h2>
-                <p className="text-sm text-gray-500">Drag components or view layers</p>
+                <p className="text-sm text-gray-500">Drag or click to add — click places in the canvas center</p>
             </div>
 
             <Tabs defaultValue="components" className="flex-1 flex flex-col min-h-0">
@@ -104,22 +160,20 @@ export const Toolbox = () => {
                                 {renderCategoryButton("text", "Text", Type)}
                                 {openCategory === "text" && (
                                     <div className="mt-2 grid grid-cols-2 gap-2">
-                                        <Button
-                                            variant="outline"
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(ref, <Element is={UserText} custom={{ displayName: "Heading" }} text="Heading" fontSize={26} fontWeight="bold" />)}
+                                            craftSource={<Element is={UserText} custom={{ displayName: "Heading" }} text="Heading" fontSize={26} fontWeight="bold" />}
                                         >
                                             <Type className="h-6 w-6" />
                                             <span className="text-xs">Heading</span>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
+                                        </ToolboxPaletteButton>
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(ref, <Element is={UserText} custom={{ displayName: "Paragraph" }} text="Paragraph" fontSize={16} />)}
+                                            craftSource={<Element is={UserText} custom={{ displayName: "Paragraph" }} text="Paragraph" fontSize={16} />}
                                         >
                                             <Type className="h-4 w-4" />
                                             <span className="text-xs">Paragraph</span>
-                                        </Button>
+                                        </ToolboxPaletteButton>
                                     </div>
                                 )}
                             </div>
@@ -128,22 +182,20 @@ export const Toolbox = () => {
                                 {renderCategoryButton("media", "Media", ImageIcon)}
                                 {openCategory === "media" && (
                                     <div className="mt-2 grid grid-cols-2 gap-2">
-                                        <Button
-                                            variant="outline"
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(ref, <UserImage />)}
+                                            craftSource={<UserImage />}
                                         >
                                             <ImageIcon className="h-6 w-6" />
                                             <span className="text-xs">Image</span>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
+                                        </ToolboxPaletteButton>
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(ref, <UserVideo />)}
+                                            craftSource={<UserVideo />}
                                         >
                                             <Youtube className="h-6 w-6" />
                                             <span className="text-xs">Video</span>
-                                        </Button>
+                                        </ToolboxPaletteButton>
                                     </div>
                                 )}
                             </div>
@@ -152,22 +204,20 @@ export const Toolbox = () => {
                                 {renderCategoryButton("layout", "Layout", LayoutTemplate)}
                                 {openCategory === "layout" && (
                                     <div className="mt-2 grid grid-cols-2 gap-2">
-                                        <Button
-                                            variant="outline"
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(ref, <Element is={UserContainer} custom={{ displayName: "Container" }} canvas height="500px" width="100%" layoutMode="canvas" padding={0} />)}
+                                            craftSource={<Element is={UserContainer} custom={{ displayName: "Container" }} canvas height="500px" width="100%" layoutMode="canvas" padding={0} />}
                                         >
                                             <Square className="h-6 w-6" />
                                             <span className="text-xs">Container</span>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
+                                        </ToolboxPaletteButton>
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(ref, <Element is={UserContainer} custom={{ displayName: "Row" }} flexDirection="row" flexWrap="wrap" width="100%" gap={0} padding={0} layoutMode="canvas" minHeight="300px" canvas />)}
+                                            craftSource={<Element is={UserContainer} custom={{ displayName: "Row" }} flexDirection="row" flexWrap="wrap" width="100%" gap={0} padding={0} layoutMode="canvas" minHeight="300px" canvas />}
                                         >
                                             <Columns className="h-6 w-6 rotate-90" />
                                             <span className="text-xs">Row</span>
-                                        </Button>
+                                        </ToolboxPaletteButton>
                                         {/* <Button
                                             variant="outline"
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
@@ -182,41 +232,35 @@ export const Toolbox = () => {
                                             <Columns className="h-6 w-6" />
                                             <span className="text-xs">2 Cols</span>
                                         </Button> */}
-                                        <Button
-                                            variant="outline"
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(
-                                                ref,
+                                            craftSource={
                                                 <Element is={UserContainer} custom={{ displayName: "Grid 2" }} layoutMode="grid" gridColumns={2} gap={20} width="100%" padding={20} canvas>
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="120px" canvas />
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="120px" canvas />
                                                 </Element>
-                                            )}
+                                            }
                                         >
                                             <Grid className="h-6 w-6" />
                                             <span className="text-xs">Grid 2</span>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
+                                        </ToolboxPaletteButton>
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(
-                                                ref,
+                                            craftSource={
                                                 <Element is={UserContainer} custom={{ displayName: "Grid 4" }} layoutMode="grid" gridColumns={4} gap={20} width="100%" padding={20} canvas>
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="100px" canvas />
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="100px" canvas />
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="100px" canvas />
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="100px" canvas />
                                                 </Element>
-                                            )}
+                                            }
                                         >
                                             <Grid className="h-6 w-6" />
                                             <span className="text-xs">Grid 4</span>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
+                                        </ToolboxPaletteButton>
+                                        <ToolboxPaletteButton
                                             className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                            ref={(ref: any) => connectors.create(
-                                                ref,
+                                            craftSource={
                                                 <Element is={UserContainer} custom={{ displayName: "Grid 6" }} layoutMode="grid" gridColumns={6} gap={20} width="100%" padding={20} canvas>
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="80px" canvas />
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="80px" canvas />
@@ -225,11 +269,11 @@ export const Toolbox = () => {
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="80px" canvas />
                                                     <Element is={UserContainer} width="100%" padding={0} layoutMode="canvas" minHeight="80px" canvas />
                                                 </Element>
-                                            )}
+                                            }
                                         >
                                             <Grid className="h-6 w-6" />
                                             <span className="text-xs">Grid 6</span>
-                                        </Button>
+                                        </ToolboxPaletteButton>
                                     </div>
                                 )}
                             </div>
@@ -241,112 +285,101 @@ export const Toolbox = () => {
                                         <div className="space-y-2">
                                             <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Form</Label>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <Button
-                                                    variant="outline"
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserInput />)}
+                                                    craftSource={<UserInput />}
                                                 >
                                                     <TextCursorInput className="h-6 w-6" />
                                                     <span className="text-xs">Input</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserTextarea />)}
+                                                    craftSource={<UserTextarea />}
                                                 >
                                                     <RectangleHorizontal className="h-6 w-6" />
                                                     <span className="text-xs">Textarea</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserLabel />)}
+                                                    craftSource={<UserLabel />}
                                                 >
                                                     <Tag className="h-6 w-6" />
                                                     <span className="text-xs">Label</span>
-                                                </Button>
+                                                </ToolboxPaletteButton>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
                                             <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Interaction</Label>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <Button
-                                                    variant="outline"
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserButton />)}
+                                                    craftSource={<UserButton />}
                                                 >
                                                     <MousePointerClick className="h-6 w-6" />
                                                     <span className="text-xs">Button</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserSwitch />)}
+                                                    craftSource={<UserSwitch />}
                                                 >
                                                     <ToggleRight className="h-6 w-6" />
                                                     <span className="text-xs">Switch</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserSlider />)}
+                                                    craftSource={<UserSlider />}
                                                 >
                                                     <SlidersHorizontal className="h-6 w-6" />
                                                     <span className="text-xs">Slider</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserPopup />)}
+                                                    craftSource={<UserPopup />}
                                                 >
                                                     <Square className="h-6 w-6" />
                                                     <span className="text-xs">Popup</span>
-                                                </Button>
+                                                </ToolboxPaletteButton>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
                                             <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Visuals & Animation</Label>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <Button
-                                                    variant="outline"
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserAnimatedShape />)}
+                                                    craftSource={<UserAnimatedShape />}
                                                 >
                                                     <Sparkles className="h-6 w-6" />
                                                     <span className="text-xs">Shape</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserEmoji />)}
+                                                    craftSource={<UserEmoji />}
                                                 >
                                                     <Smile className="h-6 w-6" />
                                                     <span className="text-xs">Emoji</span>
-                                                </Button>
+                                                </ToolboxPaletteButton>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
                                             <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Data Display</Label>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <Button
-                                                    variant="outline"
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserChart />)}
+                                                    craftSource={<UserChart />}
                                                 >
                                                     <PieChart className="h-6 w-6" />
                                                     <span className="text-xs">Chart</span>
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
+                                                </ToolboxPaletteButton>
+                                                <ToolboxPaletteButton
                                                     className="flex flex-col h-20 items-center justify-center gap-2 hover:border-blue-500 hover:text-blue-500 transition-colors"
-                                                    ref={(ref: any) => connectors.create(ref, <UserTable />)}
+                                                    craftSource={<UserTable />}
                                                 >
                                                     <TableIcon className="h-6 w-6" />
                                                     <span className="text-xs">Table</span>
-                                                </Button>
+                                                </ToolboxPaletteButton>
                                             </div>
                                         </div>
 
@@ -396,14 +429,14 @@ export const Toolbox = () => {
                                                     <PanelBottom className="w-6 h-6" />
                                                     <span className="text-xs">Navbar</span>
                                                 </Button> */}
-                                                <Button
-                                                    ref={(ref: any) => connectors.create(ref, <UserModernHero />)}
+                                                <ToolboxPaletteButton
+                                                    craftSource={<UserModernHero />}
                                                     variant="outline"
                                                     className="flex flex-col gap-2 h-20 hover:bg-muted"
                                                 >
                                                     <LayoutTemplate className="w-6 h-6" />
                                                     <span className="text-xs">Modern Hero</span>
-                                                </Button>
+                                                </ToolboxPaletteButton>
                                                 {/* <Button
                                                     ref={(ref: any) => connectors.create(ref, <UserFooter />)}
                                                     variant="outline"

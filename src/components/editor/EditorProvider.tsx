@@ -23,6 +23,7 @@ import { UserFooter } from "../user/sections/Footer";
 import { UserPrivateEventPopup } from "../user/sections/PrivateEventPopup";
 import { UserNavbar } from "../user/Navbar";
 import { UserDecorative } from "../user/Decorative";
+import { applyPendingDropPositionInNormalize } from "@/lib/canvasToolboxPlacement";
 
 export const craftResolver = {
     UserText,
@@ -52,6 +53,9 @@ export const EditorProvider = ({ children }: { children: React.ReactNode }) => {
         <Editor
             resolver={craftResolver}
             onRender={RenderNode}
+            normalizeNodes={(state, previousState, action) => {
+                applyPendingDropPositionInNormalize(state, previousState, action.type);
+            }}
         >
             {children}
         </Editor>

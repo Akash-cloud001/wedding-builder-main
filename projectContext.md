@@ -1,105 +1,155 @@
 # Project Context
 
-This document provides a comprehensive overview of the `wedding-builder-main` project structure, architecture, and core functionality. It is intended to help developers understand the codebase quickly for future reference.
+This document summarizes **wedding-builder-main** (npm package name: `wedding-anti`): a standalone visual editor for event landing pages, built for embedding in the broader **Nin9** event platform (e.g. `/planner/studio` in the main app). Use it to onboard quickly and to keep architecture decisions visible.
 
-## 1. Project Overview
+---
 
-The project is a visual drag-and-drop website builder designed for creating event landing pages (like weddings). It serves as a standalone studio editor (part of the broader Nin9 event management platform) and allows users to construct fully responsive single-page websites with sections, animations, and custom styling.
+## 1. What the product is
 
-## 2. Tech Stack
+- **Purpose**: Drag-and-drop **CraftJS** editor for wedding/event-style landing pages: sections, typography, media, forms, charts, decoratives, and animations.
+- **Shape of the app**: Single Next.js route (`src/app/page.tsx`) mounts the full studio: **AppProvider → EditorProvider → Viewport** with a **Frame** whose root is a **canvas-mode** `UserContainer` (free placement).
+- **Not included**: Hosted backend for templates; persistence is **browser storage** plus optional **Cloudinary** uploads and a **dev-oriented** JSON file API.
 
-- **Framework**: Next.js 16 (App Router with React Compiler enabled)
-- **Library**: React 19 (Strict Mode + TypeScript)
-- **Visual Builder Engine**: `@craftjs/core` (Handles node tree, serialization, drag-and-drop logic)
-- **Styling**: Tailwind CSS v4 + PostCSS
-- **Animations / Interactions**: Framer Motion
-- **Typography**: Next.js Font Optimization with 7+ curated wedding Google Fonts (Great Vibes, Dancing Script, Playfair Display, etc.).
-- **UI Primitives**: Radix UI + shadcn/ui components (located in `src/components/ui/`)
-- **Other Key Libraries**: 
-  - `recharts` for charts.
-  - `react-contenteditable` for text editing directly on the canvas.
-  - `react-resizable-panels` for drag-resizable editor sidebars.
+---
 
-## 3. Directory Structure
+## 2. Tech stack
 
-The source code primarily lives under the `src/` directory.
+| Area | Choice |
+|------|--------|
+| Framework | **Next.js 16** (App Router), **React Compiler** enabled in `next.config.ts` |
+| UI | **React 19**, TypeScript strict |
+| Builder | **@craftjs/core** (+ **@craftjs/layers** for the Layers tree in the toolbox) |
+| Styling | **Tailwind CSS v4** + PostCSS |
+| Motion | **Framer Motion** (canvas drag, animations on user components) |
+| Primitives | **Radix UI** + shadcn-style components in `src/components/ui/` |
+| Fonts | **next/font/google** in `layout.tsx` (Geist + wedding-oriented faces: Great Vibes, Dancing Script, Playfair, Cormorant Garamond, Sacramento, Montserrat, Lobster Two). Viewport also loads a small Google Fonts `<link>` for canvas use. |
+| Charts / inputs | **recharts**, **react-contenteditable**, **react-resizable-panels** |
+| Media | **cloudinary** SDK on `/api/upload` |
+
+**Path alias**: `@/*` → `./src/*` (`tsconfig.json`).
+
+**Dependencies in package.json not referenced under `src/`** (as of this doc): e.g. `styled-components`, `lottie-react`, `react-best-gradient-color-picker` — may be reserved for future UI or unused; verify before relying on them.
+
+---
+
+## 3. Directory map
 
 ### `src/app/`
-- Contains `layout.tsx`, `page.tsx`, and `globals.css`. 
-- **`page.tsx`**: The single page where the entire editor application mounts. 
-- **`api/upload/route.ts`**: Handles Cloudinary media uploads and deletions with strictly typed async handlers.
 
-### `src/components/`
-Divided into core logical boundaries:
+- **`page.tsx`**: Client page; wraps editor providers and initial **empty** canvas `Element`.
+- **`layout.tsx`**: Root layout, global font CSS variables, default metadata (still generic “Create Next App” — product metadata may need tightening).
+- **`globals.css`**: Global styles.
+- **`api/upload/route.ts`**: `POST` multipart → Cloudinary `wedding-builder/` folder; `DELETE` JSON `{ url }` → parse `public_id` and destroy asset. Requires `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+- **`api/save-template/route.ts`**: `POST` appends body to **`src/data/templates.json`** on disk. Intended for local/dev workflows; **not** suitable for serverless read-only FS in production.
 
-#### `src/components/editor/`
-Holds the foundational structure and layout elements of the visual builder editor.
-- **`EditorProvider.tsx`**: Wraps craft.js `<Editor>` and maps all draggable user components (resolvers) so they can be parsed from saved state.
-- **`AppContext.tsx`**: Manages editor context states (responsive mode toggling, preview mode, etc.). Includes state for switched right panels (Properties, Templates, Decoratives).
-- **`Viewport.tsx`**: The main three-panel layout shell.
-- **`Toolbox.tsx`**: The left sidebar containing component palettes. Includes triggers for the right-panel asset libraries.
-- **`SettingsPanel.tsx`**: The right sidebar that loads setting properties corresponding to the currently selected node or switches to asset libraries like `DecorativeLibrary`.
-- **`DecorativeLibrary.tsx`**: A searchable/tabbed asset browser for SVG lines and shapes, supporting both drag-and-drop and one-click addition.
-- **`RenderNode.tsx`**: Custom UI wrapper for every component dropped onto the canvas. It injects resize handles, selection outlines, and movement toolbars.
-- **`Topbar.tsx`**: The top navigation for utility actions.
-- **`Layers.tsx`**: A tree-view of the actual node hierarchy currently on the canvas.
+### `src/components/editor/`
 
-#### `src/components/user/`
-Contains every draggable element that users can place on the canvas. These components strictly adhere to CraftJS's `useNode()` hook architecture.
-- **Base Elements**: `Container.tsx`, `Text.tsx`, `Image.tsx`, `Button.tsx`, `Input.tsx`, `Video.tsx`, etc.
-- **`Decorative.tsx`**: Specialized component for SVG assets with support for dynamic resizing, rotation, and opacity.
-- **`hooks/useCanvasDrag.ts`**: Vital custom hook determining if an element is inside an absolute-positioned canvas versus flex/grid contexts. Applies Framer Motion props for drag movement.
+| File | Role |
+|------|------|
+| `AppContext.tsx` | Device (desktop/mobile), preview, **named sections** state (`sections` + `saveSection` / `loadSection`), **right panel** mode: `properties` \| `templates` \| `decoratives`. |
+| `EditorProvider.tsx` | `<Editor resolver={craftResolver} onRender={RenderNode}>`. |
+| `Viewport.tsx` | Three-column shell: Toolbox \| canvas \| SettingsPanel; listens for **`nin9-pages-state`** to show multi-page dropdown; mobile/desktop canvas width behavior. |
+| `Toolbox.tsx` | Palettes (text, media, layout, elements, blocks), Layers tab, entry points to Templates / Decoratives (switch right panel). |
+| `SettingsPanel.tsx` | Selected node settings **or** template/decoratives UI depending on `activeRightPanel`. |
+| `DecorativeLibrary.tsx` | SVG decoratives from `public/shapes/`, drag or add-to-root. |
+| `RenderNode.tsx` | Selection chrome, resize/move, editor vs preview behavior. |
+| `Topbar.tsx` | Undo/redo, device + preview, **template CRUD** (local storage), **multi-page** within a template, save-to-`templates.json`, FullPreview trigger. |
+| `SectionSwitcher.tsx` | Switches **logical sections** (Home, Story, …): serializes current canvas to context, deserializes target; strips legacy **`HeroSection`** nodes from loaded JSON. |
+| `Layers.tsx` | Craft layers panel wiring. |
+| `FullPreview.tsx` | Full-page preview dialog. |
+| `TemplateList.tsx` | Loads starters from **`@/data/templates.json`**. |
+| `properties/*` | Shared spacing/style controls for settings UIs. |
 
-#### `src/components/user/sections/`
-Pre-built composition templates (like `ModernHero.tsx`, `Footer.tsx`) that users can drop as entire block sections.
+### `src/components/user/`
 
-#### `src/components/ui/`
-Standard reusable Radix/shadcn UI basic building blocks.
+Craft **user components** (`useNode`, `connect`, `drag`, `craft` static with `related.settings`). Includes **Container** (flex/grid/canvas), **Text**, **Image**, **Video**, **Button**, form controls, **Popup**, **Chart**, **Table**, **Emoji**, **AnimatedShape**, **Navbar**, **Decorative**, **AnimationSection** pattern, etc.
 
-### `src/utils/`
-- **`storage.ts`**: Handles state persistence for templates using IndexedDB / localStorage.
+### `src/components/user/sections/`
 
-## 4. Architecture & Data Flow
+Preset blocks: **ModernHero**, **Footer**, **PrivateEventPopup**. **`HeroSection.tsx` exists in the folder but is not registered in `craftResolver`**; old saves are cleaned when loading via `SectionSwitcher`.
 
-### The Builder Hierarchy
+### `src/utils/storage.ts`
+
+- **Strategy**: Prefer **localStorage**; on quota errors, write to **IndexedDB** (`DB_NAME`: `wedding-editor-db`, store `templates`). `get()` reads localStorage first, then IDB.
+- **API**: `storage.save(key, string)`, `storage.get(key)`, `storage.remove(key)`.
+
+### `src/lib/`
+
+- **`imageRegistry.ts`**: Maps temporary **blob URLs** to `File` and optional replaced Cloudinary URL (used when saving/uploading images from the editor).
+- **`utils.ts`**: `cn`, toasts, etc.
+
+### `src/data/templates.json`
+
+Bundled starter templates; appended to by **`/api/save-template`** when used from the Topbar flow.
+
+---
+
+## 4. Architecture & data flow
+
+### Provider hierarchy
+
 ```
-AppProvider (Manages Device Types, Preview State)
-  ↳ EditorProvider (Initializes Craft.js framework + Registers Components)
-      ↳ Viewport (The UI Layout)
-          ├─ Toolbox (Left: Draggable primitive components)
-          ├─ Canvas (Center: Where rendering and designing happens)
-          └─ SettingsPanel (Right: Configuration panel or Asset Libraries)
+AppProvider (device, preview, section JSON map, right panel mode)
+  └─ EditorProvider (CraftJS + resolver + RenderNode)
+       └─ Viewport (Topbar + Toolbox + canvas + SettingsPanel)
+            └─ Frame → root UserContainer (canvas)
 ```
 
-### Key Systems & Logic
+### Editing loop
 
-#### Intelligent Canvas Alignment
-- **Problem**: Traditional flex alignment often breaks in absolute-position "Canvas" containers.
-- **Solution**: Components like `UserText` detect their parent container mode. In "Canvas" mode, alignment triggers update the component's `top`/`left` properties to percentage values (`50%`, `100%`) rather than flex-alignment props. 
-- **Visual Accuracy**: Uses CSS `translateX`/`translateY` transforms to ensure elements are centered on their own mid-points, preventing layout squish and ensuring precise positioning.
+1. User drags from **Toolbox** (or adds from **DecorativeLibrary** / templates).
+2. Craft creates nodes; **RenderNode** wraps each for selection and manipulation.
+3. Selection drives **SettingsPanel** via each component’s `craft.related.settings`.
+4. **`setProp` / Craft actions** update serialized state; **preview** toggles editor `enabled` so links/inputs behave realistically.
 
-#### Decoratives System
-- **Library Flow**: Users click the 'Decoratives' trigger in the Toolbox, which switches the `SettingsPanel` to library mode via `AppContext`.
-- **Composition**: Library uses `connectors.create` for dragging and `actions.add` for instant one-click placement into the `ROOT` node.
-- **Assets**: Powered by local SVG files in `public/shapes/`, managed via the `UserDecorative` component.
+### Layout modes (`UserContainer`)
 
-### Drag & Drop Lifecycle
-1. **Toolbox to Canvas**: User drags an element from `Toolbox.tsx` or chooses an asset from `DecorativeLibrary.tsx`.
-2. **Node Creation**: Craft.js intercepts this and creates a node referencing the matching React component.
-3. **Rendering (`RenderNode.tsx`)**: Whenever a component is rendered, `RenderNode.tsx` wraps it, instantly injecting editing tools.
-4. **Configuration**: When the user clicks the element, Craft.js marks it as `selected`. The `SettingsPanel.tsx` dynamically mounts the specific settings component.
-5. **State Updating**: Setting panels trigger `setProp()` mutations, Craft.js updates the node tree, and the canvas rerenders seamlessly.
+- **flex** / **grid**: normal flow.
+- **canvas**: children use **`useCanvasDrag`** for absolute positioning; alignment helpers in **Text** etc. map to `top`/`left` + transforms where needed.
 
-## 5. Development Principles & Commands
+### Sections vs pages
 
-### Workflow
-- Start Server: `npm run dev`
-- Build for Production: `npm run build` (Requires strict typing on API routes and resolvers)
-- Lint Codebase: `npm run lint`
+- **SectionSwitcher**: Multiple **named sections** per session; state lives in **React** (`AppContext.sections`), not separate storage keys. Switching serializes the current tree and deserializes the other section (or a default empty ROOT).
+- **Topbar templates**: **Multi-page** support: list of page IDs per **root** template, keys like `wedding-pages-${rootId}`, `wedding-page-root-${pageId}`. Dispatches **`nin9-pages-state`** so Viewport can show page names.
 
-### Critical Rules & Constraints
-- **Explicit Types for API Routes:** Next.js 16 requires explicit `Promise<Response>` return types for `POST`/`DELETE` handlers to avoid build failures.
-- **Node Resolver Registration:** Any new `UserComponent` must be imported and added to the `craftResolver` in `EditorProvider.tsx`.
-- **Canvas-Aware Positioning:** When adding new components, use the `useCanvasDrag` hook and verify behavior in both "Flex" and "Canvas" layout modes.
-- **Typography Constraints:** New fonts should be initialized in `layout.tsx` using `next/font/google` and exposed via global CSS variables for use in `UserText`.
-to React Nodes.
+### Persistence keys (browser)
+
+| Key / pattern | Role |
+|---------------|------|
+| `wedding-templates` | JSON array of `{ id, name, lastSaved }` |
+| `wedding-template-${id}` | Craft serialized string for that page/template id |
+| `wedding-current-template-id` | Active id |
+| `wedding-page-root-${id}` | Root id for multi-page group |
+| `wedding-pages-${rootId}` | JSON string array of page ids |
+| `wedding-site-state` | Legacy single-site load path (see Topbar) |
+
+### Server / assets
+
+- **Images**: Client uploads via **`/api/upload`** to Cloudinary; **`imageRegistry`** ties blobs to files until upload.
+- **Export templates to repo**: Topbar can **`POST /api/save-template`** to append to `src/data/templates.json` (filesystem write).
+
+---
+
+## 5. Commands
+
+```bash
+npm run dev    # Next dev (default port 3000)
+npm run build  # Production build + typecheck
+npm run lint   # ESLint
+```
+
+---
+
+## 6. Rules for extending the codebase
+
+1. **New canvas components**: Define `Component.craft`, implement settings, add to **`craftResolver`** in `EditorProvider.tsx`, and expose in **Toolbox** if user-placed.
+2. **API routes**: Keep explicit `Promise<Response>` (or consistent NextResponse) return types where the compiler demands it.
+3. **Canvas-aware widgets**: Use **`useCanvasDrag`** and test **flex/grid/canvas** parents.
+4. **Legacy types**: If removing a component type from the resolver, consider migration or deserialization cleanup (pattern: `SectionSwitcher` + `HeroSection`).
+5. **Production template saving**: Do not rely on **`/api/save-template`** without a writable persistence layer; current implementation is file-based under `src/data/`.
+
+---
+
+## 7. Doc maintenance
+
+When adding major features (auth, remote save, new resolver entries, storage keys), update this file so agents and humans share the same mental model of **Craft tree + local persistence + Cloudinary + optional JSON templates**.
