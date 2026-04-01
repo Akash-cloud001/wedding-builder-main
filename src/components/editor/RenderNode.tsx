@@ -6,9 +6,11 @@ import { ROOT_NODE } from "@craftjs/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Move, ArrowUp, Trash2 } from "lucide-react";
+import { useAppContext } from "./AppContext";
 
 export const RenderNode = ({ render }: { render: React.ReactNode }) => {
     const { id } = useNode();
+    const { setActiveRightPanel } = useAppContext();
     const { actions, query, isActive, enabled } = useEditor((state, query) => ({
         isActive: query.getEvent("selected").contains(id),
         enabled: state.options.enabled,
@@ -34,6 +36,11 @@ export const RenderNode = ({ render }: { render: React.ReactNode }) => {
         props: node.data.props,
         childIds: [...(node.data?.nodes || []), ...Object.values(node.data?.linkedNodes || {})],
     }));
+
+    useEffect(() => {
+        if (!enabled || !isActive) return;
+        setActiveRightPanel("properties");
+    }, [enabled, isActive, setActiveRightPanel]);
 
     // Sync width/height/top/left when DOM changes or is active
     const [dimensions, setDimensions] = useState({ width: 0, height: 0, top: 0, left: 0 });
@@ -185,6 +192,7 @@ export const RenderNode = ({ render }: { render: React.ReactNode }) => {
             event.preventDefault();
             event.stopPropagation();
             actions.selectNode(id);
+            setActiveRightPanel("properties");
             // Clear hover so the blue dotted outline disappears on selection (avoids persistent hover on containers/siblings)
             (actions as any).setNodeEvent?.("hovered", null);
             startFreeMoveRef.current(event);

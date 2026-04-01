@@ -11,7 +11,7 @@ import { TemplateList } from "./TemplateList";
 import { DecorativeLibrary } from "./DecorativeLibrary";
 
 export const SettingsPanel = () => {
-    const { activeRightPanel, setActiveRightPanel } = useAppContext();
+    const { activeRightPanel } = useAppContext();
     const { selected, actions } = useEditor((state, query) => {
         const [currentNodeId] = state.events.selected;
         let selected;
@@ -24,7 +24,12 @@ export const SettingsPanel = () => {
                 settings: node.related && node.related.settings,
                 isDeletable: query.node(currentNodeId).isDeletable(),
                 props: node.data.props, // Need props to check for src
-                resolvedName: (node.data.type as any).resolvedName || node.data.name
+                resolvedName:
+                    typeof node.data.type === "object" &&
+                    node.data.type !== null &&
+                    "resolvedName" in node.data.type
+                        ? (node.data.type as { resolvedName: string }).resolvedName
+                        : node.data.name
             };
         }
 
@@ -32,12 +37,6 @@ export const SettingsPanel = () => {
             selected,
         };
     });
-
-    React.useEffect(() => {
-        if (selected?.id && activeRightPanel !== "properties" && activeRightPanel !== "decoratives" && activeRightPanel !== "templates") {
-            setActiveRightPanel("properties");
-        }
-    }, [selected?.id, activeRightPanel, setActiveRightPanel]);
 
     if (activeRightPanel === "templates") {
         return (
